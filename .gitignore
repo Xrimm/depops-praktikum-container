@@ -1,0 +1,6 @@
+# Rahasia: jangan pernah di-commit
+.env
+
+# Biner lokal
+backend/server-app
+backend/app-server
