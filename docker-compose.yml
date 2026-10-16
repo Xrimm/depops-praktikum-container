@@ -1,0 +1,73 @@
+services:
+  # 1. LAYANAN DATABASE POSTGRESQL
+  db:
+    image: postgres:16-alpine
+    container_name: mk40-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: devops_user
+      POSTGRES_PASSWORD: devops_secret
+      POSTGRES_DB: devops_inventory
+    volumes:
+      # Named volume 'pgdata' menjamin data tidak hilang saat container dihapus
+      - pgdata:/var/lib/postgresql/data
+      # Menjalankan init.sql otomatis saat database pertama kali dibuat
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - app-bridge-net
+    # KEAMANAN: sengaja TIDAK ada 'ports:' supaya database tidak bisa diakses dari luar
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devops_user -d devops_inventory"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # 2. LAYANAN BACKEND API (Dockerfile multi-stage dari Tahap 3)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: backend-api:42430019-v1.0.0
+    container_name: mk40-backend
+    restart: unless-stopped
+    environment:
+      APP_PORT: "8080"
+      STUDENT_NIM: "42430019"
+      STUDENT_NAME: "Evan Safi Maulana Malik Ibrahim"
+      STORAGE_MODE: "postgres"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_USER: "devops_user"
+      DB_PASSWORD: "devops_secret"
+      DB_NAME: "devops_inventory"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-bridge-net
+
+  # 3. LAYANAN FRONTEND WEB (satu-satunya pintu masuk dari browser)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: frontend-web:42430019-v1.0.0
+    container_name: mk40-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - app-bridge-net
+
+# Penyimpanan persisten (Named Volume)
+volumes:
+  pgdata:
+    name: mk40_pgdata_volume
+
+# Jaringan internal khusus (Custom Bridge Network)
+networks:
+  app-bridge-net:
+    name: mk40_bridge_network
+    driver: bridge
