@@ -3,7 +3,7 @@
 - **Nama Mahasiswa**: [Evan Safi Maulana Malik Ibrahim]
 - **NIM**: [42430019]
 - **Kelas / Prodi**: S1 Teknologi Informasi – UNDIKNAS Denpasar
-- **Tautan Branch / Pull Request GitHub**: [https://github.com/Xrimm/depops-praktikum-container/tree/lab1-2/42430019-evan / Rosan]
+- **Tautan Branch / Pull Request GitHub**: [https://github.com/Xrimm/depops-praktikum-container/tree/lab1-2/42430019-evan / https://github.com/Xrimm/depops-praktikum-container/pulls/1]
 - **Nama Rekan Peer-Reviewer**: [Rosan Kelvino & 42430025]
 ---
 
@@ -54,13 +54,13 @@ Pada tahap keempat ini, Named volume 'pgdata' dipasang ke '/var/lib/postgresql/d
 Frontend tidak terhubung langsung ke database. Nginx pada 'frontend' meneruskan request '/api/' ke 'http://backend:8080' lewat 'proxy_pass', lalu 'backend' menghubungi database dengan 'DB_HOST=db'. Ketiganya berada di jaringan bridge 'mk40_bridge_network' dan saling menemukan lewat nama layanan, yang diterjemahkan oleh DNS bawaan Docker. Container 'db' tidak memiliki bagian 'ports:', sehingga port 5432 hanya bisa dijangkau dari dalam jaringan dan tidak terbuka ke publik.
 
 ### E. Tahap 5 – Skenario Troubleshooting & Analisis Error
-![Error connection refused saat DB_HOST=localhost](docs/screenshots/sc01a-tahap5-troubleshooting.png)
-![Healthy kembali setelah DB_HOST=db](docs/screenshots/sc02b-tahap5-troubleshooting.png)
+![Error connection refused saat DB_HOST=localhost](docs/screenshots/sc01-tahap5-troubleshooting.png)
+![Healthy kembali setelah DB_HOST=db](docs/screenshots/sc02-tahap5-troubleshooting.png)
 * **Penjelasan Tahap 5**:
 Pada tahap kelima ini, ‘localhost’ di dalam container backend tidak merujuk ke container db karena setiap container memiliki network namespace sendiri, sehingga ‘localhost’ hanya menunjuk ke container backend itu sendiri yang tidak menjalankan PostgreSQL.
 
 Perintah ‘docker compose down -v’ berbahaya karena ikut menghapus named volume ‘pgdata’, sehingga seluruh data PostgreSQL hilang permanen.
 
 ## 3. Bukti Audit Silang (Peer-Review) di GitHub
-- **Tautan Pull Request (PR)**: `https://github.com/.../pull/...`
+- **Tautan Pull Request (PR)**: `(https://github.com/Xrimm/depops-praktikum-container/pulls/1)`
 - **Ringkasan Catatan Peer-Reviewer**: [Tuliskan hasil verifikasi dari rekan yang memeriksa PR Anda]
