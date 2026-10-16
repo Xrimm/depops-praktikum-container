@@ -1,0 +1,17 @@
+# 1. FROM: Base image (OS + compiler Go siap pakai)
+FROM golang:1.22-bookworm
+
+# 2. WORKDIR: folder kerja di dalam container
+WORKDIR /app
+
+# 3. COPY: salin semua file dari folder backend ke /app
+COPY . .
+
+# 4. RUN: kompilasi kode menjadi file aplikasi 'server-app'
+RUN go build -o server-app main.go
+
+# 5. EXPOSE: dokumentasi bahwa container mendengarkan port 8080
+EXPOSE 8080
+
+# 6. CMD: perintah yang dijalankan saat container menyala
+CMD ["./server-app"]
